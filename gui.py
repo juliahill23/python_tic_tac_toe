@@ -216,7 +216,7 @@ def user_click():
 
         update_Board(pos)
         # check if game has been won / is over
-        winner = board.isGameOver(currPlayer)
+        winner = board.isGameOver()
         game_status()
 
 
@@ -224,28 +224,54 @@ def reset_game():
     # reset everything to initial values
     global board, winner, currPlayer, gamemode
     time.sleep(2)
-    currPlayer = 'x'
-    game_init_window()
-    winner = -1
     gamemode = ''
+    currPlayer = 'x'
+    winner = -1
     board = Board()
+    game_init_window()
     game_status()
 
 
 if __name__ == '__main__':
     game_init_window()
+    board.twoInARow(currPlayer)
 
     while True:
 
         for event in pg.event.get():
-
+            # quit game if user selects quit button
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-            elif event.type == pg.MOUSEBUTTONDOWN:
+            # if user clicks on unoccupied board position and it
+            # is the users turn, updates the board and draws the move
+            elif event.type == pg.MOUSEBUTTONDOWN and currPlayer == 'x':
 
                 user_click()
+                # if game is over, restart the game
                 if winner == 0 or winner == 1 or winner == 2:
                     reset_game()
+
+        # if it is the computer's turn
+        if currPlayer == 'o':
+            time.sleep(0.5)
+            # get computer's next move, based on game difficulty
+            if gamemode == 'easy':
+                pos = board.nextMoveEasy()
+            elif gamemode == 'med':
+                pos = board.nextMoveMed()
+            elif gamemode == 'hard':
+                pos = board.nextMoveMed()
+
+            # draw the move, update board
+            update_Board(pos)
+            # check to see if game has ended
+            winner = board.isGameOver()
+            # update game status text on screen
+            game_status()
+            # if game is over, reset the game
+            if winner == 0 or winner == 1 or winner == 2:
+                reset_game()
+
         pg.display.update()
         CLOCK.tick(fps)
