@@ -121,6 +121,11 @@ class Board:
         else:
             return -1
 
+    def isOnlyInCorners(self, player):
+        for pos in self.playerPos[player]:
+            if pos not in self.corners:
+                return False
+        return True
     # randomly picks unoccupied board position for next move
     def nextMoveEasy(self):
 
@@ -161,6 +166,10 @@ class Board:
         # otherwise, if 'o' can block 'x' from making 3 in a row, make that move
         elif two_in_a_row_play >= 0:
             return two_in_a_row_play
+        elif self.isOnlyInCorners('x') and get_two_in_a_row_comp[0] >= 0:
+            for pos in get_two_in_a_row_comp:
+                if pos not in self.corners:
+                    return pos
         # otherwise, find optimal place to get 2 in a row, find optimal place for opponent to get 2 in a row
         # and if there is union, select that number
         elif get_two_in_a_row_comp[0] >= 0 and get_two_in_a_row_play[0] >= 0:
