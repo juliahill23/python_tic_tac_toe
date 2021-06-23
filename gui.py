@@ -123,11 +123,14 @@ def game_status():
 
     # check win status
     if winner < 0:
-        message = currPlayer.upper() + "'s Turn"
+        if currPlayer == 'x':
+            message = "Your Turn"
+        else:
+            message = currPlayer.upper() + "'s Turn"
     elif winner == 1:
-        message = "Player o" + " won !"
+        message = "You lost "
     elif winner == 2:
-        message = "Player x won !"
+        message = "You won !"
     elif winner == 0:
         message = "Game Draw !"
 
@@ -261,7 +264,7 @@ if __name__ == '__main__':
             elif gamemode == 'med':
                 pos = board.nextMoveMed()
             elif gamemode == 'hard':
-                pos = board.nextMoveMed()
+                pos = board.nextMoveHard()
 
             # draw the move, update board
             update_Board(pos)
