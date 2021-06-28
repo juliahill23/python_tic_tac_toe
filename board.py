@@ -1,4 +1,6 @@
 import numpy as np
+
+
 class Board:
     def __init__(self):
         # space on board is:
@@ -7,15 +9,14 @@ class Board:
         # - 2 if nought
         # initialized as 3x3 unoccupied board, with indexes describing pos:
         # 0 | 1 | 2
-        #---+---+---
+        # ---+---+---
         # 3 | 4 | 5
-        #---+---+---
+        # ---+---+---
         # 6 | 7 | 8
         self.spaces = ['' for x in range(9)]
         # positions occupied by crosses and noughts
-        self.playerPos = {'x': [], 'o': [], 'unoccupied': [1]*9}
+        self.playerPos = {'x': [], 'o': [], 'unoccupied': [1] * 9}
         self.corners = [0, 2, 6, 8]
-
 
     def getBoard(self):
         return self.spaces
@@ -126,16 +127,16 @@ class Board:
             if pos not in self.corners:
                 return False
         return True
+
     # randomly picks unoccupied board position for next move
-    def nextMoveEasy(self):
+    def nextMoveEasy(self, low=0, high=9):
 
         while 1:
-            pos = np.random.randint(0, 9)
+            pos = np.random.randint(low, high)
 
             if self.spaces[pos] == '':
                 break
 
-        self.placeOnBoard('o', pos)
         return pos
 
     # tries to get three in a row, otherwise blocks the player
@@ -147,7 +148,6 @@ class Board:
             return two_in_a_row_comp
         elif two_in_a_row_play >= 0:
             return two_in_a_row_play
-
 
         return self.nextMoveEasy()
 
@@ -166,6 +166,8 @@ class Board:
         # otherwise, if 'o' can block 'x' from making 3 in a row, make that move
         elif two_in_a_row_play >= 0:
             return two_in_a_row_play
+        # if player is only in corners, pick position on board that gives the computer
+        # 2 in a row that is not in a corner
         elif self.isOnlyInCorners('x') and get_two_in_a_row_comp[0] >= 0:
             for pos in get_two_in_a_row_comp:
                 if pos not in self.corners:
@@ -182,6 +184,14 @@ class Board:
         # if first player move is in corner, pick middle of board
         elif not self.playerPos['o'] and self.playerPos['x'][0] in self.corners and self.playerPos['unoccupied'][4]:
             return 4
+        # if first player move is in middle, block one of the corners
+        elif not self.playerPos['o'] and self.playerPos['x'][0] == 4:
+            while 1:
+                pos = np.random.choice(self.corners)
+
+                if self.spaces[pos] == '':
+                    break
+            return pos
 
         # should probably never get here other than for the first move,
         # but if all conditions fail, choose random pos
